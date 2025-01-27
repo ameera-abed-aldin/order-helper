@@ -11,10 +11,12 @@ import {
   Avatar,
   Paper,
 } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import Grid from "@mui/material/Grid2"; // Use Grid2
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import { useAuth } from "../AuthContext";
 
 // Predefined categories
 const categories = [
@@ -78,7 +80,7 @@ const ImageUploader = ({ images, handleFileChange, removeImage }) => {
             </Box>
           </Grid>
         ))}
-        {images.length < 4 && ( 
+        {images.length < 4 && (
           <Grid size={3}>
             <Box
               sx={{
@@ -154,26 +156,29 @@ const AttributeInput = ({
           helperText={errors[`attributes.${index}.attributesValue`]}
         />
       </Grid>
- 
-        <Grid  size={12} sx={{marginBottom:'1rem'}}>
-          <Button
-            type="button"
-            variant="outlined"
-            fullWidth
-            color="error"
-            onClick={() => removeAttribute(index)}
-          >
-            Remove
-          </Button>
-        </Grid>
-      </Grid>
 
+      <Grid size={12} sx={{ marginBottom: "1rem" }}>
+        <Button
+          type="button"
+          variant="outlined"
+          fullWidth
+          color="error"
+          onClick={() => removeAttribute(index)}
+        >
+          Remove
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 
 // Main AddProduct Component
 const AddProduct = () => {
   // State for form fields
+  const { accessToken } = useAuth();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [successMessage,setSuccessMessage] =useState("");
+  const supplierId = 1;
   const [formData, setFormData] = useState({
     product: {
       name: "",
@@ -351,16 +356,19 @@ const AddProduct = () => {
     // Send the request using axios
     axios
       .post(
-        `http://localhost:8080/api/v1/supplier/product/create/1`,
+        `/api/v1/supplier/product/create/${supplierId}`,
         formDataToSend,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       )
       .then((response) => {
         console.log("Product added successfully:", response.data);
+        setSuccessMessage("Product added successfully");
+        setSnackbarOpen(true);
         // Reset form after successful submission
         setFormData({
           product: {
@@ -375,6 +383,9 @@ const AddProduct = () => {
           images: [],
         });
         setErrors({});
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 5000);
       })
       .catch((error) => {
         console.error(
@@ -385,6 +396,17 @@ const AddProduct = () => {
   };
 
   return (
+    <>
+    {/* Success Message */}
+    {successMessage && (
+      <Typography
+        variant="body1"
+        sx={{ color: "green", marginBottom: 2, textAlign: "center" }}
+      >
+        {successMessage}
+      </Typography>
+    )}
+
     <Box sx={{ flexGrow: 1, padding: 2 }}>
       <Grid container spacing={2}>
         {/* Left Column: Form Fields */}
@@ -540,7 +562,23 @@ const AddProduct = () => {
       >
         Add Product
       </Button>
+      
+    {/* Success Snackbar */}
+    <Snackbar
+      open={snackbarOpen}
+      autoHideDuration={6000} // Close after 6 seconds
+      onClose={() => setSnackbarOpen(false)}
+    >
+      <Alert
+        onClose={() => setSnackbarOpen(false)}
+        severity="success"
+        sx={{ width: "100%" }}
+      >
+        Product added successfully!
+      </Alert>
+    </Snackbar>
     </Box>
+    </>
   );
 };
 

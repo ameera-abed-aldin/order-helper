@@ -1,4 +1,5 @@
 import * as React from 'react';  
+import logo from "../../assets/2.png";
 import { extendTheme, styled } from '@mui/material/styles';  
 import DashboardIcon from '@mui/icons-material/Dashboard';  
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';  
@@ -139,12 +140,18 @@ export default function AdminDashBoard(props) {
   return (  
     <AppProvider  
       navigation={NAVIGATION}  
+      branding={{
+        logo: <img src={logo} alt="logo" />,
+        title: 'ElEENA',
+        homeUrl: '/toolpad/core/introduction',
+      }}
       router={router}  
       theme={demoTheme}  
       window={demoWindow}  
     >  
       <DashboardLayout>  
         <PageContainer>  
+          {console.log(userLoggedDetails)}
           <Grid container spacing={1}>  
             <Grid size={12}>  
               {renderComponent()}  
