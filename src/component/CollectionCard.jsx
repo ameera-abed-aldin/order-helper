@@ -2,9 +2,9 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';  
 
 
-const CollectionCard= ({ image,title}) => {  
+const CollectionCard= ({ image,title,onClick}) => {  
     return (  
-        <Card   style={{backgroundImage:`url(${image})`,backgroundSize:"cover"}} className="my-card custom-heigth">  
+        <Card  onClick={onClick}  style={{backgroundImage:`url(${image})`,backgroundSize:"cover"}} className="my-card custom-heigth">  
            
                 
                 <Card.Title className='collection-title text-center'>{title}</Card.Title>  

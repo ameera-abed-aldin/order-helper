@@ -1,15 +1,28 @@
 import { useEffect } from "react";
 import {useAuth} from "./AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate,Outlet } from "react-router";
 
 export function ProtectedRoute(props){
-const {accessToken}=useAuth();
+const {accessToken,userLoggedDetails}=useAuth();
 console.log(accessToken);
 const nevigate=useNavigate();
 
-    if(!accessToken){
-       useEffect(()=>{return nevigate("/login")},[nevigate]);
+  
+useEffect(() => {  
+    // Check if there's no access token  
+    console.log(userLoggedDetails)
+    if (!accessToken) {  
+        nevigate("/login");  
+    } else {  
+      // Redirect based on user role  
+      if (userLoggedDetails.role[0].authority === "SUPPLIER") {  
        
-    }
-    return props.children;
+        nevigate("/admin/dashboard");  
+      } else {  
+        nevigate("/");  
+      }  
+    }  
+  }, [accessToken, userLoggedDetails, nevigate]);  
+
+    return  <Outlet />;
 }

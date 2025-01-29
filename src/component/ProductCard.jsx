@@ -20,10 +20,10 @@ export default function ProductCard({product}){
             <AiOutlineHeart style={{ color: '#4f47ff', fontSize: '2rem' }} />  
           )}  
         </Button>  
-      <Card.Img variant="top"  style={{ width: '100%', objectFit: 'cover' }} src={product.thumbnail}/>
+      <Card.Img variant="top"  style={{ width: '100%', objectFit: 'cover', height: '350px' }} src={`data:image/png;base64,${product.mainImage}`}/>
       <Card.Body>
         <Card.Title className='fs-6'>
-          <Link  to={`/products/${product.id}`} className='link text-dark'>{product.title}</Link>
+          <Link  to={`/products/${product.productId}`} className='link text-dark'>{product.name}</Link>
           </Card.Title>
         <div className='d-flex justify-content-between' style={{alignItems: "baseline"}}>
         <p className='font-price'>

@@ -8,16 +8,21 @@ import Home from "./pages/Home";
 import BestSellerPage from "./pages/BestSellerPage";
 import ProductDetails from "./pages/ProductDetails";
 import Layout from "./pages/Layout";
+import User from './pages/User';
+import { useAuth } from "./component/AuthContext";
+import CatalogPage from "./pages/CatalogPage";
 
 
 function App() {
+ 
   return (
     <>
+
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products/:id" element={<ProductDetails />} />
-          
+          <Route path="/catalog/:catalogName" element={<CatalogPage/>} />
         </Route>
      
 
@@ -27,7 +32,16 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Rigister />} />
         </Route>
-        <Route path="/admin/dashboard" element={ <ProtectedRoute > <AdminDashBoard/> </ProtectedRoute> } />
+        <Route  element={ <ProtectedRoute />  } >
+        <Route path="/admin/dashboard" element={<AdminDashBoard />} />
+       
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path="/catalog/:catalogName" element={<CatalogPage/>} />
+        </Route>
+        
+        </Route>
       </Routes>
     </>
   );

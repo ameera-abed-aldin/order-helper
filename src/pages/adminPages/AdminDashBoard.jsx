@@ -17,7 +17,8 @@ import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBullet
 import AddProduct from '../../component/admin/AddProduct'; // Your AddProduct component  
 import ProductList from '../../component/admin/ProductList'; // Your ProductList component  
 import LogOut from '../../component/admin/LogOut';
-import {useAuth} from "../../component/AuthContext"
+import {useAuth} from "../../component/AuthContext";
+import TokenChecker from "../../component/TokenChecker";
 
 const NAVIGATION = [  
   {  
@@ -138,6 +139,7 @@ export default function AdminDashBoard(props) {
   };  
 
   return (  
+
     <AppProvider  
       navigation={NAVIGATION}  
       branding={{
@@ -148,7 +150,8 @@ export default function AdminDashBoard(props) {
       router={router}  
       theme={demoTheme}  
       window={demoWindow}  
-    >  
+    > 
+    <TokenChecker /> 
       <DashboardLayout>  
         <PageContainer>  
           {console.log(userLoggedDetails)}

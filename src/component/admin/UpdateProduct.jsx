@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -15,15 +15,16 @@ import { Snackbar, Alert } from "@mui/material";
 import Grid from "@mui/material/Grid2"; // Use Grid2
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+
 import axios from "axios";
 import { useAuth } from "../AuthContext";
 
 // Predefined categories
 const categories = [
   { productCategoryId: 1, categoryName: "T-Shirts" },
-  { productCategoryId: 2, categoryName: "Accassorios" },
+  { productCategoryId: 2, categoryName: "Shirts" },
   { productCategoryId: 3, categoryName: "Jeans" },
-  { productCategoryId: 4, categoryName: "Shoos" },
+  { productCategoryId: 4, categoryName: "Shorts" },
   { productCategoryId: 5, categoryName: "Jackets" },
   { productCategoryId: 6, categoryName: "Sweaters" },
   { productCategoryId: 7, categoryName: "Hoodies" },
@@ -46,8 +47,6 @@ const ImageUploader = ({ images, handleFileChange, removeImage }) => {
       <Grid container spacing={2}>
         {images.map((image, index) => (
           <Grid key={index} xs={12}>
-            {" "}
-            {/* Each image takes full width (one image per row) */}
             <Box
               sx={{
                 width: "100%",
@@ -172,30 +171,45 @@ const AttributeInput = ({
   );
 };
 
-// Main AddProduct Component
-const AddProduct = () => {
-  // State for form fields
+// Main UpdateProduct Component
+const UpdateProduct = ({ product }) => {
   const { accessToken } = useAuth();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [successMessage,setSuccessMessage] =useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const supplierId = 1;
+
   const [formData, setFormData] = useState({
     product: {
-      name: "",
-      description: "",
-      price: "",
-      quantity: "",
-      productCatalog: "",
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      quantity: product.quantity,
+      productCatalog: product.productCatalog,
     },
-    productCategory: null,
-    attributes: [{ attributesName: "", attributesValue: "" }],
+    productCategory: product.productCategory,
+    attributes: product.attributes || [{ attributesName: "", attributesValue: "" }],
     images: [],
   });
 
-  // State for form errors
   const [errors, setErrors] = useState({});
 
-  // Handle input change
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        product: {
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          quantity: product.quantity,
+          productCatalog: product.productCatalog,
+        },
+        productCategory: product.productCategory,
+        attributes: product.attributes || [{ attributesName: "", attributesValue: "" }],
+        images: [],
+      });
+    }
+  }, [product]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -207,7 +221,6 @@ const AddProduct = () => {
     });
   };
 
-  // Handle category selection
   const handleCategoryChange = (e) => {
     const selectedCategory = categories.find(
       (cat) => cat.productCategoryId === e.target.value
@@ -223,7 +236,6 @@ const AddProduct = () => {
     }
   };
 
-  // Handle file input change for multiple images
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
 
@@ -242,7 +254,6 @@ const AddProduct = () => {
     setErrors({ ...errors, images: "" });
   };
 
-  // Remove an image from the list
   const removeImage = (index) => {
     const updatedImages = formData.images.filter((_, i) => i !== index);
     setFormData({
@@ -251,7 +262,6 @@ const AddProduct = () => {
     });
   };
 
-  // Handle attribute change
   const handleAttributeChange = (index, field, value) => {
     const updatedAttributes = [...formData.attributes];
     updatedAttributes[index][field] = value;
@@ -261,7 +271,6 @@ const AddProduct = () => {
     });
   };
 
-  // Add a new attribute field
   const addAttribute = () => {
     setFormData({
       ...formData,
@@ -272,7 +281,6 @@ const AddProduct = () => {
     });
   };
 
-  // Remove an attribute field
   const removeAttribute = (index) => {
     const updatedAttributes = formData.attributes.filter((_, i) => i !== index);
     setFormData({
@@ -281,7 +289,6 @@ const AddProduct = () => {
     });
   };
 
-  // Validate form fields
   const validateForm = () => {
     const newErrors = {};
 
@@ -315,7 +322,6 @@ const AddProduct = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -326,7 +332,6 @@ const AddProduct = () => {
 
     const formDataToSend = new FormData();
 
-    // Prepare productDto JSON
     const productDto = {
       product: {
         name: formData.product.name,
@@ -345,18 +350,15 @@ const AddProduct = () => {
       })),
     };
 
-    // Append productDto as a JSON string
     formDataToSend.append("productDto", JSON.stringify(productDto));
 
-    // Append all selected images to FormData
     formData.images.forEach((image) => {
       formDataToSend.append("multipartFile", image);
     });
 
-    // Send the request using axios
     axios
-      .post(
-        `/api/v1/supplier/product/create/${supplierId}`,
+      .put(
+        `/api/v1/supplier/product/update/${product.productId}`,
         formDataToSend,
         {
           headers: {
@@ -366,30 +368,16 @@ const AddProduct = () => {
         }
       )
       .then((response) => {
-        console.log("Product added successfully:", response.data);
-        setSuccessMessage("Product added successfully");
+        console.log("Product updated successfully:", response.data);
+        setSuccessMessage("Product updated successfully");
         setSnackbarOpen(true);
-        // Reset form after successful submission
-        setFormData({
-          product: {
-            name: "",
-            description: "",
-            price: "",
-            quantity: "",
-            productCatalog: "",
-          },
-          productCategory: null,
-          attributes: [{ attributesName: "", attributesValue: "" }],
-          images: [],
-        });
-        setErrors({});
         setTimeout(() => {
           setSuccessMessage("");
         }, 5000);
       })
       .catch((error) => {
         console.error(
-          "Error adding product:",
+          "Error updating product:",
           error.response ? error.response.data : error.message
         );
       });
@@ -397,189 +385,176 @@ const AddProduct = () => {
 
   return (
     <>
-    {/* Success Message */}
-    {successMessage && (
-      <Typography
-        variant="body1"
-        sx={{ color: "green", marginBottom: 2, textAlign: "center" }}
-      >
-        {successMessage}
-      </Typography>
-    )}
+      {successMessage && (
+        <Typography
+          variant="body1"
+          sx={{ color: "green", marginBottom: 2, textAlign: "center" }}
+        >
+          {successMessage}
+        </Typography>
+      )}
 
-    <Box sx={{ flexGrow: 1, padding: 2 }}>
-      <Grid container spacing={2}>
-        {/* Left Column: Form Fields */}
-        <Grid size={6} spacing={2}>
-          <Paper sx={{ padding: 2 }}>
-            {/* Product Name */}
-            <TextField
-              label="Product Name"
-              name="name"
-              onChange={handleChange}
-              value={formData.product.name}
-              required
-              fullWidth
-              margin="normal"
-              error={!!errors.name}
-              helperText={errors.name}
-            />
-
-            {/* Product Description */}
-            <TextField
-              label="Product Description"
-              name="description"
-              onChange={handleChange}
-              value={formData.product.description}
-              required
-              fullWidth
-              margin="normal"
-              multiline
-              rows={4}
-              error={!!errors.description}
-              helperText={errors.description}
-            />
-
-            {/* Product Price */}
-            <TextField
-              label="Product Price"
-              name="price"
-              type="number"
-              onChange={handleChange}
-              value={formData.product.price}
-              required
-              fullWidth
-              margin="normal"
-              error={!!errors.price}
-              helperText={errors.price}
-            />
-
-            {/* Product Quantity */}
-            <TextField
-              label="Product Quantity"
-              name="quantity"
-              type="number"
-              onChange={handleChange}
-              value={formData.product.quantity}
-              required
-              fullWidth
-              margin="normal"
-              error={!!errors.quantity}
-              helperText={errors.quantity}
-            />
-
-            {/* Handling Attributes */}
-            {formData.attributes.map((attribute, index) => (
-              <AttributeInput
-                key={index}
-                attribute={attribute}
-                index={index}
-                handleAttributeChange={handleAttributeChange}
-                removeAttribute={removeAttribute}
-                errors={errors}
+      <Box sx={{ flexGrow: 1, padding: 2 }}>
+        <Grid container spacing={2}>
+          <Grid size={6} spacing={2}>
+            <Paper sx={{ padding: 2 }}>
+              <TextField
+                label="Product Name"
+                name="name"
+                onChange={handleChange}
+                value={formData.product.name}
+                required
+                fullWidth
+                margin="normal"
+                error={!!errors.name}
+                helperText={errors.name}
               />
-            ))}
-            <Button type="button" onClick={addAttribute} variant="outlined">
-              Add Attribute
-            </Button>
-          </Paper>
+
+              <TextField
+                label="Product Description"
+                name="description"
+                onChange={handleChange}
+                value={formData.product.description}
+                required
+                fullWidth
+                margin="normal"
+                multiline
+                rows={4}
+                error={!!errors.description}
+                helperText={errors.description}
+              />
+
+              <TextField
+                label="Product Price"
+                name="price"
+                type="number"
+                onChange={handleChange}
+                value={formData.product.price}
+                required
+                fullWidth
+                margin="normal"
+                error={!!errors.price}
+                helperText={errors.price}
+              />
+
+              <TextField
+                label="Product Quantity"
+                name="quantity"
+                type="number"
+                onChange={handleChange}
+                value={formData.product.quantity}
+                required
+                fullWidth
+                margin="normal"
+                error={!!errors.quantity}
+                helperText={errors.quantity}
+              />
+
+              {formData.attributes.map((attribute, index) => (
+                <AttributeInput
+                  key={index}
+                  attribute={attribute}
+                  index={index}
+                  handleAttributeChange={handleAttributeChange}
+                  removeAttribute={removeAttribute}
+                  errors={errors}
+                />
+              ))}
+              <Button type="button" onClick={addAttribute} variant="outlined">
+                Add Attribute
+              </Button>
+            </Paper>
+          </Grid>
+
+          <Grid size={6} spacing={2}>
+            <Paper sx={{ padding: 2 }}>
+              <InputLabel>Product Catalog</InputLabel>
+              <Select
+                value={formData.product.productCatalog}
+                onChange={handleChange}
+                name="productCatalog"
+                fullWidth
+                margin="normal"
+                sx={{ marginBottom: "1rem" }}
+                required
+                error={!!errors.productCatalog}
+              >
+                <MenuItem value="">Select a catalog</MenuItem>
+                {productCatalogs.map((catalog) => (
+                  <MenuItem key={catalog} value={catalog}>
+                    {catalog}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errors.productCatalog && (
+                <Typography color="error" variant="caption">
+                  {errors.productCatalog}
+                </Typography>
+              )}
+
+              <InputLabel>Product Category</InputLabel>
+              <Select
+                value={
+                  formData.productCategory
+                    ? formData.productCategory.productCategoryId
+                    : ""
+                }
+                onChange={handleCategoryChange}
+                fullWidth
+                margin="normal"
+                required
+                error={!!errors.productCategory}
+              >
+                <MenuItem value="">Select a category</MenuItem>
+                {categories.map((category) => (
+                  <MenuItem
+                    key={category.productCategoryId}
+                    value={category.productCategoryId}
+                  >
+                    {category.categoryName}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <ImageUploader
+                images={formData.images}
+                handleFileChange={handleFileChange}
+                removeImage={removeImage}
+              />
+              {errors.images && (
+                <Typography color="error">{errors.images}</Typography>
+              )}
+            </Paper>
+          </Grid>
         </Grid>
 
-        {/* Right Column: Image Uploader, Catalog, and Categories */}
-        <Grid size={6} spacing={2}>
-          <Paper sx={{ padding: 2 }}>
-            {/* Product Catalog */}
-            <InputLabel>Product Catalog</InputLabel>
-            <Select
-              value={formData.product.productCatalog}
-              onChange={handleChange}
-              name="productCatalog"
-              fullWidth
-              margin="normal"
-              sx={{ marginBottom: "1rem" }}
-              required
-              error={!!errors.productCatalog}
-            >
-              <MenuItem value="">Select a catalog</MenuItem>
-              {productCatalogs.map((catalog) => (
-                <MenuItem key={catalog} value={catalog}>
-                  {catalog}
-                </MenuItem>
-              ))}
-            </Select>
-            {errors.productCatalog && (
-              <Typography color="error" variant="caption">
-                {errors.productCatalog}
-              </Typography>
-            )}
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ marginTop: 3 }}
+          onClick={handleSubmit}
+        >
+          Update Product
+        </Button>
 
-            {/* Product Category */}
-            <InputLabel>Product Category</InputLabel>
-            <Select
-              value={
-                formData.productCategory
-                  ? formData.productCategory.productCategoryId
-                  : ""
-              }
-              onChange={handleCategoryChange}
-              fullWidth
-              margin="normal"
-              required
-              error={!!errors.productCategory}
-            >
-              <MenuItem value="">Select a category</MenuItem>
-              {categories.map((category) => (
-                <MenuItem
-                  key={category.productCategoryId}
-                  value={category.productCategoryId}
-                >
-                  {category.categoryName}
-                </MenuItem>
-              ))}
-            </Select>
-
-            {/* Image Uploader */}
-            <ImageUploader
-              images={formData.images}
-              handleFileChange={handleFileChange}
-              removeImage={removeImage}
-            />
-            {errors.images && (
-              <Typography color="error">{errors.images}</Typography>
-            )}
-          </Paper>
-        </Grid>
-      </Grid>
-
-      {/* Submit Button */}
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ marginTop: 3 }}
-        onClick={handleSubmit}
-      >
-        Add Product
-      </Button>
-      
-    {/* Success Snackbar */}
-    <Snackbar
-      open={snackbarOpen}
-      autoHideDuration={6000} // Close after 6 seconds
-      onClose={() => setSnackbarOpen(false)}
-    >
-      <Alert
-        onClose={() => setSnackbarOpen(false)}
-        severity="success"
-        sx={{ width: "100%" }}
-      >
-        Product added successfully!
-      </Alert>
-    </Snackbar>
-    </Box>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarOpen(false)}
+        >
+          <Alert
+            onClose={() => setSnackbarOpen(false)}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Product updated successfully!
+          </Alert>
+        </Snackbar>
+      </Box>
     </>
   );
 };
 
-export default AddProduct;
+export default UpdateProduct;

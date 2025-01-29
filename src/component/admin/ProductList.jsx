@@ -14,6 +14,7 @@ import {
   CircularProgress,
   Container,
 } from "@mui/material";
+import UpdateProduct from './UpdateProduct'
 import DeleteIcon from "@mui/icons-material/Delete"; // Import DeleteIcon
 import EditIcon from "@mui/icons-material/Edit"; // Import EditIcon
 import { useAuth } from "../AuthContext";
@@ -68,7 +69,9 @@ const ProductList = () => {
   // Handle update product
   const handleUpdate = (productId) => {
     // Navigate to the update page or open a modal
-    console.log("Update product:", productId);
+    const newProduct=products.filter(product => product.productId === productId);
+   console.log(newProduct);
+   <UpdateProduct key={newProduct}/>
   };
 
   if (loading) {
