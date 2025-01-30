@@ -6,13 +6,16 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthContext } from "./component/AuthContext.jsx";
 import { BrowserRouter } from "react-router";
+import { CartProvider } from "./Context/AddToCartContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
+    <CartProvider> 
      <AuthContext>
        <App />
      </AuthContext>
+     </CartProvider>
     </BrowserRouter>
   </StrictMode>
 );

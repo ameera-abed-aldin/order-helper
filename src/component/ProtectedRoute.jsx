@@ -22,7 +22,7 @@ useEffect(() => {
         nevigate("/");  
       }  
     }  
-  }, [accessToken, userLoggedDetails, nevigate]);  
+  }, [accessToken, userLoggedDetails]);  
 
     return  <Outlet />;
 }

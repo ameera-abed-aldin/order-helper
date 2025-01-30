@@ -2,18 +2,27 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';  
 import ProductCard from './ProductCard';
 import {Row,Col} from 'react-bootstrap';
-export default function RelatedProduct({category}){
+import { useAuth } from './AuthContext';
+export default function RelatedProduct({catalogName}){
     const [relatedProducts, setRelatedProducts] = useState([]);  
     const [loading, setLoading] = useState(true);  
-    const [error, setError] = useState(null);  
-
+    const [error, setError] = useState(null); 
+    const {accessToken}=useAuth(); 
+    const page = 0;  
+    const size = 10; 
     useEffect(() => {  
         setLoading(true);  
         // Make the request to fetch products based on a category  
-        axios.get(`https://dummyjson.com/products/category/${category}`)  
+        axios.get('/api/v1/product/get/products/by/catalog', {  
+            params: { catalog: catalogName, page, size },  
+           headers: {  
+               'Authorization': `Bearer ${accessToken}`,  
+           }  
+       })  
             .then((response) => {  
                 
-                setRelatedProducts(response.data.products);
+                setRelatedProducts(response.data.content);
+                console.log(response.data)
                  
             })  
             .catch((err) => {  
@@ -22,7 +31,7 @@ export default function RelatedProduct({category}){
             .finally(() => {  
                 setLoading(false);  
             });  
-    }, [category]);  
+    }, [catalogName]);  
 
     if (loading) {  
         return <div>Loading...</div>;  
@@ -35,7 +44,7 @@ if(!loading){
     return ( 
 
         <>  
-            <h2 className='mb-4'>Related Products </h2>  
+            <h2 className='mb-5'>Related Products </h2>  
             <div className="product-list"> 
         <Row>  
             {relatedProducts.map((product,index) => (  
