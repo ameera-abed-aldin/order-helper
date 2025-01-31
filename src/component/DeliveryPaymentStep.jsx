@@ -16,8 +16,18 @@ import {
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import PaymentIcon from "@mui/icons-material/Payment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import axios from "axios";
 
-const DeliveryPaymentStep = ({ onBack, onNext }) => {
+const DeliveryPaymentStep = ({
+  onBack,
+  onNext,
+  handleNext,
+  sessionId,
+  userId,
+  accessToken,
+  setError,
+  setMessage
+}) => {
   // State for customer information
   const [customerInfo, setCustomerInfo] = useState({
     name: "Vishnu Prasad V P",
@@ -29,6 +39,8 @@ const DeliveryPaymentStep = ({ onBack, onNext }) => {
     address: "433 Old Gate Ln, Milford",
   });
 
+  const [paymentId, setPaymentId] = useState("");
+  console.log(sessionId, userId, accessToken + "delvery");
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +49,54 @@ const DeliveryPaymentStep = ({ onBack, onNext }) => {
       [name]: value,
     }));
   };
+  //
+  const handlePay = () => {  
+    // First API call to get payment ID  
+    axios  
+        .post(  
+            `/api/v1/payment/add/${userId}`,  
+            {},  
+            {  
+                headers: {  
+                    Authorization: `Bearer ${accessToken}`,  
+                },  
+            }  
+        )  
+        .then((response) => {  
+            if (response.status === 200) {  
+              
+                const paymentId = response.data.id;  
+                setPaymentId(paymentId);  
+                console.log("Payment ID:", paymentId);  
 
+                // Proceed to the second API call only after we have paymentId  
+                return axios.post(  
+                    `/api/v1/checkout/add/${userId}/${sessionId}/${paymentId}`,  
+                    {},  
+                    {  
+                        headers: {  
+                            Authorization: `Bearer ${accessToken}`,  
+                        },  
+                    }  
+                );  
+            } else {  
+                throw new Error("Failed to get payment ID");  
+            }  
+        })  
+        .then((response) => {  
+            if (response.status === 200) {  
+              setMessage(  
+                "We have received your order. It will take 3 to 5 days to deliver. Thank you for shopping with us!"  
+            );   
+                console.log("Checkout response:", response.data);  
+                handleNext();
+            }  
+        })  
+        .catch((err) => {  
+            setError("Failed to process checkout. Please try again.");  
+            console.error(err);  
+        });  
+};
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h5" gutterBottom>
@@ -144,13 +203,11 @@ const DeliveryPaymentStep = ({ onBack, onNext }) => {
 
         {/* Order Summary */}
         <Grid size={4}>
-          <Paper elevation={1} sx={{ p: 3, mb: 3 ,backgroundColor:"#f4f5fc"}}>
+          <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>
               Order Summary
             </Typography>
             <List>
-            
-                
               <Divider />
               <ListItem>
                 <ListItemText primary="Subtotal" />
@@ -166,6 +223,15 @@ const DeliveryPaymentStep = ({ onBack, onNext }) => {
                 <Typography variant="h6">$160.76</Typography>
               </ListItem>
             </List>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+              fullWidth
+              onClick={handlePay} // Move to the next step
+            >
+              pay
+            </Button>
           </Paper>
         </Grid>
       </Grid>

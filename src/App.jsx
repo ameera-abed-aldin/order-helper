@@ -12,27 +12,41 @@ import User from "./pages/User";
 import { useAuth } from "./component/AuthContext";
 import CatalogPage from "./pages/CatalogPage";
 import ViewCart from "./pages/ViewCart";
+import { deepPurple } from '@mui/material/colors';  
+import { createTheme, ThemeProvider } from '@mui/material/styles';  
+
+const theme = createTheme({  
+  palette: {  
+    primary: {  
+      main: deepPurple[500],   
+    },  
+  },  
+}); 
 
 function App() {
   return (
-    <>
-      <Routes>
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Rigister />} />
-        </Route>
+    <ThemeProvider theme={theme}>
+    <Routes>
+      {/* Public Routes */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Rigister/>} />
+      </Route>
+
+      {/* User Routes (accessible to authenticated users) */}
+      <Route element={<Layout />}>
         <Route path="/viewCart" element={<ViewCart />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashBoard />} />
-          <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/products/:id" element={<ProductDetails />} />
-            <Route path="/catalog/:catalogName" element={<CatalogPage />} />
-            
-          </Route>
-        </Route>
-      </Routes>
-    </>
+        <Route path="/" element={<Home />} />
+        <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/catalog/:catalogName" element={<CatalogPage />} />
+      </Route>
+
+      {/* Protected Routes (only for SUPPLIER or specific roles) */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/admin/dashboard" element={<AdminDashBoard />} />
+      </Route>
+    </Routes>
+  </ThemeProvider>
   );
 }
 

@@ -7,7 +7,7 @@ import {
   IconButton,
   CircularProgress,
   Box,
-  Checkbox,
+ 
   Table,
   TableHead,
   TableBody,
@@ -24,6 +24,8 @@ import DeleteIcon from "@mui/icons-material/Close";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import { useAuth } from "../component/AuthContext";
 import DeliveryPaymentStep from "../component/DeliveryPaymentStep";
+import {Link ,useNavigate} from "react-router"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const steps = ["Review Cart", "Delivery & Payment", "Place Order"];
 
@@ -32,11 +34,19 @@ const ViewCart = () => {
   const { accessToken, userLoggedDetails } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-
+  const paymentDetailsId=1;
+  const [userId, setUserId] = useState(null);
+  const [message, setMessage] = useState("");  
+const [error, setError] = useState("");  
+const navigate = useNavigate();
   useEffect(() => {
-    const userId = 1; // Replace with actual user ID
-    fetchCart(userId, accessToken);
-  }, []);
+    if (userLoggedDetails && userLoggedDetails.role) {
+      const userId = userLoggedDetails.role[1].authority;
+      setUserId(userId); 
+      fetchCart(userId, accessToken);
+    }
+  }, [userLoggedDetails, accessToken]);
+  
 
   const totalSteps = () => steps.length;
   const completedSteps = () => Object.keys(completed).length;
@@ -87,6 +97,8 @@ const ViewCart = () => {
 
   return (
     <Container sx={{ mt: 5 }}>
+      { console.log(userLoggedDetails.role[1].authority + "userId")}
+      {console.log(cart.id +"cart")}
       <Typography variant="h4" gutterBottom>
         Your Cart
       </Typography>
@@ -263,18 +275,64 @@ const ViewCart = () => {
 
       {/* Step 2: Delivery & Payment */}
       {activeStep === 1 && (
-          <DeliveryPaymentStep onBack={handleBack} onNext={handleNext} />
+          <DeliveryPaymentStep onBack={handleBack} onNext={handleNext} handleNext={handleNext} 
+          sessionId={cart.id} userId={userId}   accessToken={accessToken}
+          setMessage={setMessage} 
+          setError={setError}   />
       )
       }
 
       {/* Step 3: Place Order */}
       {activeStep === 2 && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5">Place Order</Typography>
-          <Typography variant="body1">
-            Review your order and confirm the purchase.
+         <Box sx={{ mt: 4 }}>  
+         {/* Display the message from the parent state */}  
+         {message && (  
+          <Paper
+          elevation={3}
+          sx={{
+            maxWidth: 400,
+            margin: "auto",
+            padding: 4,
+            textAlign: "center",
+            borderRadius: 2,
+          }}
+        >
+          {/* Blue Check Icon */}
+          <CheckCircleIcon sx={{ fontSize: 60, color: "primary.main", mb: 2 }} />
+    
+          {/* Thank You Message */}
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+            Thank you for ordering!
           </Typography>
-        </Box>
+    
+          {/* Additional Text */}
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            {message}
+          </Typography>
+    
+          {/* Continue Shopping Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={() => {
+              navigate("/"); // Navigate to the home page
+            }}
+          >
+            CONTINUE SHOPPING
+          </Button>
+        </Paper>
+          
+         )}  
+         {error && (  
+           <Typography variant="body1" color="error.main">  
+             {error}  
+           </Typography>  
+         )}  
+
+       
+       </Box>  
       )}
     </Container>
   );

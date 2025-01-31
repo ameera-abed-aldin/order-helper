@@ -52,7 +52,8 @@ const ProductDetails = () => {
         },  
       })  
       .then((response) => {  
-        setProduct(response.data);  
+        setProduct(response.data); 
+        window.scrollTo(0, 0); 
       })  
       .catch((error) => {  
         console.error("Error fetching product details:", error);  
@@ -92,8 +93,11 @@ const ProductDetails = () => {
 
   return (  
     <Container>  
+      <Typography variant="h4" sx={{ marginBottom: '2rem',mt:5,mb:5 }}>
+                      Products Details
+                  </Typography>
       <Grid container spacing={2}>  
-        <Grid size={6}>  
+        <Grid size={7}>  
           <Swiper  
             spaceBetween={10}  
             navigation={true}  
@@ -138,7 +142,8 @@ const ProductDetails = () => {
             </Swiper>  
           </Grid>   
          
-          <Grid size={6}>       
+          <Grid size={5} sx={{padding:".5rem 2rem"}}>
+                   
             <Typography variant="h4" gutterBottom>  
               {product.name}  
             </Typography>  
@@ -151,18 +156,19 @@ const ProductDetails = () => {
             <Typography variant="subtitle2" gutterBottom>  
               Supplier ID: {product.supplierId} {/* Assuming you want to show the supplier ID */}  
             </Typography>  
-            <Typography variant="h6" gutterBottom>  
+            <Typography variant="h6" gutterBottom color="primary">  
               Price: {product.price}$  
             </Typography>  
             
             <FormGroup>  
-              <Typography variant="h6">Select Size</Typography>  
+              <Typography variant="h6" >Select Size</Typography>  
               <RadioGroup value={selectedSizes[0] || ''} onChange={handleSizeChange}>  
                 {["S", "M", "L", "XL"].map((size) => (  
                   <FormControlLabel  
                     control={<Radio value={size} />}  
                     label={size}  
-                    key={size}  
+                    key={size}
+                      
                   />  
                 ))}  
               </RadioGroup>  
@@ -175,7 +181,7 @@ const ProductDetails = () => {
                 label="Quantity"   
                 variant="outlined"   
         
-                sx={{ marginTop: "1rem" }}   
+                sx={{ marginTop: "1rem" ,marginBottom:"1rem"}}   
               />  
             </FormGroup>  
   

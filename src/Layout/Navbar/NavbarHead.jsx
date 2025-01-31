@@ -11,20 +11,29 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router"; // Use Link from react-router-dom
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; 
-
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useAuth } from "../../component/AuthContext";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { useCart } from "../../Context/AddToCartContext";
 
 export default function NavbarHead() {
-  const itemCount = 0; 
+  const itemCount = 0;
   const navigate = useNavigate();
+  const { logout } = useAuth();
+    const { cart} = useCart();
 
-   const handelClick=()=>{
-    navigate("/viewCart")
-   }
+  const handelClick = () => {
+    navigate("/viewCart");
+  };
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <AppBar position="static" sx={{ backgroundColor: "white", color: "black" }}>
       <Container>
+        
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Left Side: Brand and Links */}
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -34,9 +43,10 @@ export default function NavbarHead() {
               to="/"
               sx={{
                 textDecoration: "none",
-                color: "inherit",
+
                 fontWeight: "bold",
               }}
+              color="primary"
             >
               EA
             </Typography>
@@ -73,14 +83,21 @@ export default function NavbarHead() {
             </div>
           </div>
 
-          {/* Right Side: Cart and Login */}
           <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             {/* Cart Icon with Badge */}
             <IconButton
-             
+              component={Link}
+              to="/"
+              sx={{ position: "relative" }}
+              color="primary"
+            >
+              <FavoriteIcon />
+            </IconButton>
+
+            <IconButton
               onClick={handelClick}
-           
-              sx={{ color: "black", position: "relative" }}
+              sx={{ position: "relative" }}
+              color="primary"
             >
               <Badge badgeContent={itemCount} color="primary">
                 <ShoppingCartIcon />
@@ -89,11 +106,10 @@ export default function NavbarHead() {
 
             {/* Login Button */}
             <Button
-              component={Link}
-              to="/login"
+              onClick={handleLogout}
               sx={{ color: "black", textTransform: "none" }}
             >
-              Login
+              LogOut
             </Button>
           </div>
         </Toolbar>

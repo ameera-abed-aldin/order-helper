@@ -24,7 +24,8 @@ const CatalogPage = ({ catalog }) => {
                 }  
             })   
             .then((response) => {  
-                setProducts(response.data.content);  
+                setProducts(response.data.content); 
+                window.scrollTo(0, 0); 
                 console.log(response.data.content);
             })  
             .catch((error) => {  
@@ -46,7 +47,7 @@ const CatalogPage = ({ catalog }) => {
     return (  
         <Container maxWidth="lg" sx={{ marginTop: '16px' }}>
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}  
-            <Typography variant="h4" sx={{ marginBottom: '2rem' }}>
+            <Typography variant="h4" sx={{ marginBottom: '2rem',mt:7,mb:5 }}>
                 Products  for {catalogName}
             </Typography>
             <Grid container spacing={3}>
@@ -55,6 +56,7 @@ const CatalogPage = ({ catalog }) => {
                     <FilterSidebar 
                         selectedCategories={selectedCategories} 
                         onCategoryChange={handleCategoryChange} 
+                        
                     />
                 </Grid>
 

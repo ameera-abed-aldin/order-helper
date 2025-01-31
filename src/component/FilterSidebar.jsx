@@ -25,7 +25,7 @@ export default function FilterSidebar({ selectedCategories, onCategoryChange }) 
               edge="start"
               checked={selectedCategories.includes(category.categoryName)}
               onChange={() => onCategoryChange(category.categoryName)}
-              sx={{ color: '#4f47ff' }}
+             color="primary" 
             />
             <ListItemText primary={category.categoryName} />
           </ListItem>

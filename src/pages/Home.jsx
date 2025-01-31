@@ -9,10 +9,10 @@ export default function Home(){
     return(
         <>
         
-        <TokenChecker /> 
+        {/* <TokenChecker />  */}
         <Hero/>
         <CardSlider/>
-        <BestSeller/>
+ 
         <CollectionSection/>
      
         </>

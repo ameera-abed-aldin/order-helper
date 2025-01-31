@@ -3,6 +3,7 @@ import axios from 'axios';
 import ProductCard from './ProductCard';
 import {Row,Col} from 'react-bootstrap';
 import { useAuth } from './AuthContext';
+import { Typography } from '@mui/material';
 export default function RelatedProduct({catalogName}){
     const [relatedProducts, setRelatedProducts] = useState([]);  
     const [loading, setLoading] = useState(true);  
@@ -44,7 +45,7 @@ if(!loading){
     return ( 
 
         <>  
-            <h2 className='mb-5'>Related Products </h2>  
+              <Typography variant="h4" component="h2" sx={{mb:7,mt:10,textAlign:"center"}}>Products You May Like </Typography>
             <div className="product-list"> 
         <Row>  
             {relatedProducts.map((product,index) => (  

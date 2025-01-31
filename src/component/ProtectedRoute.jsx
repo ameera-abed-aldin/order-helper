@@ -1,28 +1,28 @@
 import { useEffect } from "react";
-import {useAuth} from "./AuthContext";
-import { useNavigate,Outlet } from "react-router";
+import { useAuth } from "./AuthContext";
+import { useNavigate, Outlet, useLocation } from "react-router";
 
-export function ProtectedRoute(props){
-const {accessToken,userLoggedDetails}=useAuth();
-console.log(accessToken);
-const nevigate=useNavigate();
+export function ProtectedRoute() {
+  const { accessToken, userLoggedDetails } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+   
+    if (!accessToken) {
+      navigate("/login", { state: { from: location.pathname } }); 
+      return;
+    }
 
   
-useEffect(() => {  
-    // Check if there's no access token  
-    console.log(userLoggedDetails)
-    if (!accessToken) {  
-        nevigate("/login");  
-    } else {  
-      // Redirect based on user role  
-      if (userLoggedDetails.role[0].authority === "SUPPLIER") {  
-       
-        nevigate("/admin/dashboard");  
-      } else {  
-        nevigate("/");  
-      }  
-    }  
-  }, [accessToken, userLoggedDetails]);  
+    if (userLoggedDetails && userLoggedDetails.role[0].authority === "SUPPLIER") {
 
-    return  <Outlet />;
+      navigate("/admin/dashboard");
+      return;
+    }
+
+  }, [accessToken, userLoggedDetails, navigate, location]);
+
+  // Render the nested routes if the user is authenticated and authorized
+  return <Outlet />;
 }

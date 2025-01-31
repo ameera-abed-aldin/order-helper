@@ -4,7 +4,7 @@
 
 :root{
     --back-color:#c3c9d9;
-    --primary-color: #4f47ff;
+    --primary-color: #673ab7;
     --font-color:black;
     --font-color-2:white;
 }
@@ -77,10 +77,10 @@ body{
     background-color: var(--primary-color);
 }
 .hero{
-    min-height: 100vh;
-    background-image: url('./assets/hero3.jpeg');
+    min-height: 85vh;
+    background-image: url('./assets/hh2.jpg');
     background-size: cover;
-    background-position:center ;
+    background-position: center;
     padding:3rem;
    
 }
@@ -312,4 +312,142 @@ justify-content: flex-start;
     max-width: 100%;
     max-height: 100%;
     object-fit: cover;
+  }
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
+  
+  .bounce {
+    animation: bounce 0.5s;
+  }
+  /* Container for the circles */
+.background-circles {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Adjust based on your needs */
+    overflow: hidden;
+  }
+  
+  /* Base circle styles */
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(103, 58, 183, 0.2); /* Purple with transparency */
+  }
+  
+  /* Individual circle sizes and positions */
+  .circle-1 {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: 5%;
+    background-color: rgba(103, 58, 183, 0.3); /* Lighter purple */
+  }
+  
+  .circle-2 {
+    width: 300px;
+    height: 300px;
+    z-index: -1;
+    top: -8%;
+    left: 38%;
+    background-color: rgba(103, 58, 183, 0.2); /* Medium purple */
+  }
+  
+  .circle-3 {
+    width: 150px;
+    height: 150px;
+    top: 80%;
+    left: 20%;
+    background-color: rgba(103, 58, 183, 0.4); /* Darker purple */
+  }
+  /* Keyframes for floating animation */
+@keyframes float {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  /* Apply animation to circles */
+  .circle-1 {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .circle-2 {
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  .circle-3 {
+    animation: float 5s ease-in-out infinite;
+  }
+  /* Custom Slick Slider Styles */
+.slick-slide > div {
+    padding: 0 10px; /* Add spacing between slides */
+  }
+  
+  .slick-dots li button:before {
+    color: #673AB7; /* Change dot color to purple */
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #673AB7; /* Change active dot color to purple */
+  }
+  .css-1fzlhpv-MuiGrid2-root{
+ width:50px !important;
+    height: 50px !important;
+  }
+  .css-1d4mat6{
+    height: 150px !important;
+  }
+  .front-card-cont{
+    background-image: url('./assets/bg1.jpg');
+  }
+  /* Add this to your global CSS file or a stylesheet */
+@keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-100%); /* Start from the left */
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0); /* Move to the original position */
+    }
+  }
+  
+  .card-animation {
+    animation: slideIn 1s ease-out forwards;
+  }
+
+  /* Staggered delay for each card */
+  .card-animation:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  
+  .card-animation:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  
+  .card-animation:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  
+  .card-animation:nth-child(4) {
+    animation-delay: 0.8s;
+  }
+  .css-1mac7pt-MuiFormGroup-root{
+    flex-direction: row !important;
+  }
+  .css-1miy0lu-MuiTypography-root{
+    margin-right:50px !important;
   }

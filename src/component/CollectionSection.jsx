@@ -7,6 +7,7 @@ import card1 from '../assets/card1.jpg';
 import card2 from '../assets/card2.jpg';  
 import card3 from '../assets/card33.jpg';   
 import card4 from '../assets/card5.png';  
+import { Typography } from '@mui/material';
 
 export default function CollectionSection(){  
   const navigate = useNavigate(); 
@@ -14,8 +15,10 @@ export default function CollectionSection(){
     const arr = [  
         { image: card1, title: 'For Her', catalog :  "WOMEN" },  
         { image: card2, title: 'For Him', catalog: "MEN" },  
-        { image: card3, title: 'For Kids', catalog: "Babies" },  
-        { image: card4, title: 'NEW', catalog: 'new' }  
+        { image: card3, title: 'For Kids', catalog: "Babies" },
+        { image: card4, title: 'new', catalog: "new" }
+
+      
     ];  
 
     // Function to handle card click  
@@ -25,7 +28,8 @@ export default function CollectionSection(){
 
     return (  
         <Container>  
-            <h2 className="text-center fs-1 mb-4 mt-3">Featured Collection</h2>  
+
+            <Typography variant="h4" component="h2" sx={{mb:7,mt:10,textAlign:"center"}}>Featured Collection</Typography>
             <Row>  
                 {arr.map((ele, index) => (  
                     <Col xs={12} md={6} key={index}>  

@@ -4,21 +4,32 @@ import axios from 'axios';
 import{Row,Col} from 'react-bootstrap';
 import { FaArrowRight } from 'react-icons/fa';
 import { Link } from "react-router";
+import { useAuth } from './AuthContext';
 
 export default function BestSeller(){
     const [products, setProducts] = useState([]);  
     const [loading, setLoading] = useState(true);  
-    const [error, setError] = useState(null);  
+    const [error, setError] = useState(null); 
+     const {accessToken}=useAuth(); 
+        
 
     useEffect(() => {  
        
-            axios.get('https://dummyjson.com/products') // Replace with your API endpoint  
-                .then(response => {  
-                    setProducts(response.data.products);
-                   // Update state with received data  
-                })  
+        axios
+        .get("/api/v1/product/get/newest/products", {
+          params: {
+            page: 0,
+            size: 10, 
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`, 
+          },
+        }) .then(res=>{
+            console.log(res.data.content);
+            setProducts(res.data.content); 
+        })
                 .catch(err => {  
-                    setError(err.message); // Set the error message  
+                    setError(err.message);  
                     console.error('Error fetching products:', err);  
                 })  
                 .finally(() => {  
